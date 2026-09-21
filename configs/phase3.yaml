@@ -1,0 +1,59 @@
+# 阶段 3：ANC 消融 + 完整 DynaEdit
+#
+# 对照锚点是 p2_sga_t0.001（SGA 开 / ANC 关），不是 p2_base —— 因为完整 DynaEdit
+# 是两个都开，要看的是 ANC 在 SGA 之上的【增量】贡献。
+# 另外单独跑一组 ANC-only（SGA 关）做归因，否则无法区分两个模块各自的作用。
+#
+# 判据：ANC 修的是"内容随时间溶解/抖动"，主看【高频时间趋势】（后1/3÷前1/3），
+# 以及循环内直接打印的相邻步速度相关 cos_V（复现论文 Fig.11，不经视频指标）。
+
+defaults:
+  dataset_yaml: configs/edits.yaml
+  model_id: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+  flow_shift: 3.0
+  T_steps: 40
+  n_max:
+  n_avg: 1
+  num_frames:
+  height: 480
+  width: 832
+  seed: 42
+  src_guidance_scale: 2.5      # bear 在 edits.yaml 里覆盖为 (4.5, 8.5)
+  tar_guidance_scale: 4.5
+  negative_prompt_preset: wan_zh
+  use_sga: false
+  use_anc: false
+  tau: 0.001
+  sga_n_hi: 5
+  sga_k: 3
+  sga_literal: false
+  anc_t_full: 0.25
+  anc_carry: argmax
+  micro_batch: 2
+  vae_tiling: false
+  global_rng: false
+
+experiments:
+  # 完整 DynaEdit（Algorithm 2）：两个开关全开
+  - exp_name: p3_full
+    use_sga: true
+    use_anc: true
+    tau: 0.001
+
+  # ANC 单独作用：SGA 关、ANC 开。用于把两个模块的贡献分开记账
+  - exp_name: p3_anc_only
+    use_sga: false
+    use_anc: true
+
+  # 与 p2_sga_t0.001 配置完全相同，只为拿到带诊断日志的 cos_V 曲线：
+  # cos_V 的干净对照必须是 SGA开/ANC关 且 tau 相同，否则两个变量同时在动。
+  # 新加的日志不消耗 RNG、不改状态，所以它应当产出与 p2_sga_t0.001 逐比特相同的视频，
+  # 这本身又是一次确定性校验。
+  - exp_name: p3_sga_only
+    use_sga: true
+    tau: 0.001
+
+  # 补论文未采样的软硬过渡带（阶段 2 测得过渡带在 tau≈0.03–0.3）
+  - exp_name: p3_sga_t0.1
+    use_sga: true
+    tau: 0.1

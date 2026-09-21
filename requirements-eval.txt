@@ -1,0 +1,3 @@
+# 阶段 4 VLM 评测专用依赖。与跑模型无关，单独一份，避免污染核心 requirements.txt。
+#   pip install -r requirements-eval.txt
+google-genai>=1.0.0

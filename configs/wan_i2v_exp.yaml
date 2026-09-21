@@ -1,0 +1,40 @@
+# 阶段 1 基线：视频版 FlowEdit（两个开关都关）。
+# n_max 留空 = T_steps，即论文的 n_max = N —— 用来复现 Fig.2 的现象。
+- exp_name: phase1_flowedit_baseline
+  dataset_yaml: configs/edits.yaml
+  model_id: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+  flow_shift: 3.0              # WAN2.1 480P 的官方设置
+
+  # --- 采样 ---
+  T_steps: 50
+  n_max:                       # 留空 = T_steps = N
+  n_avg: 1                     # ⚠️ use_sga=true 时本项被忽略，噪声个数由 sga_schedule 决定
+  num_frames:                  # 留空 = 用视频的全部帧
+  height: 480
+  width: 832
+  # 留空跟随图像版 FlowEdit。⚠️ WAN2.1 官方推荐用一条很长的负面 prompt，
+  # 在 gamma_tar=4.5 下 uncond 分支是有实际权重的 —— 这是一个待定项，见 doc/phase1-notes.md
+  negative_prompt: ""
+  seed: 42
+
+  # --- CFG（论文 App.D.1 的第 (1)(2) 组）---
+  src_guidance_scale: 2.5
+  tar_guidance_scale: 4.5
+
+  # --- SGA（阶段 2）---
+  use_sga: false
+  tau: 0.001
+  sga_n_hi: 5
+  sga_k: 3
+  sga_literal: false           # true 走论文 Eq.4-6 字面式，仅用于验证等价性
+
+  # --- ANC（阶段 3）---
+  use_anc: false
+  anc_t_full: 0.25
+  anc_carry: argmax            # n_SGA 从 5 掉到 1 时保留哪条噪声（论文未说明）
+
+  # --- 工程 ---
+  micro_batch: 2               # 4 路 CFG 一次前向；显存紧就调成 2 或 1（数值不变）
+  vae_tiling: false            # 显存峰值在前置的 fp32 VAE 编码，OOM 时开这个
+  global_rng: false            # false = 按 (step, branch) 定种子，使 SGA on/off 的噪声流可对齐；
+                               # true  = 用全局 RNG（原始 FlowEdit 行为，但 A/B 会被噪声差异污染）

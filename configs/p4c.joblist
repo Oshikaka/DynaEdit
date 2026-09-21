@@ -1,0 +1,8 @@
+configs/phase4.yaml jeep_deer_brake p4_g3
+configs/phase4.yaml rabbit_hop_away p4_g3
+configs/phase4.yaml turtle_fish_ascend p4_g3
+configs/phase4.yaml snowboard_jump p4_g3
+configs/phase4.yaml jeep_deer_brake p4_g4
+configs/phase4.yaml rabbit_hop_away p4_g4
+configs/phase4.yaml turtle_fish_ascend p4_g4
+configs/phase4.yaml snowboard_jump p4_g4

@@ -1,0 +1,5 @@
+- name: boat_eagle_dive
+  input_video: videos/boat_832.mp4
+  source_prompt: A white boat is sailing through the blue ocean.
+  target_prompt: A white boat is sailing through the blue ocean. A large eagle swoops down from the sky
+    toward the boat and skims the water beside it.

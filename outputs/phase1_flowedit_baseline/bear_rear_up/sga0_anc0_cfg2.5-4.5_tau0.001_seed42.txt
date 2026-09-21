@@ -1,0 +1,28 @@
+source_prompt: A large brown bear walking on a rocky ledge within a habitat surrounded by stone walls and lush green foliage.
+target_prompt: A large brown bear walking on a rocky ledge within a habitat surrounded by stone walls and lush green foliage. The bear rears up on its hind legs and roars.
+target_first_frame: (源视频首帧)
+exp_name: phase1_flowedit_baseline
+dataset_yaml: configs/edits.yaml
+model_id: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+flow_shift: 3.0
+T_steps: 50
+n_max: None
+n_avg: 1
+num_frames: None
+height: 480
+width: 832
+negative_prompt: 
+seed: 42
+src_guidance_scale: 2.5
+tar_guidance_scale: 4.5
+use_sga: False
+tau: 0.001
+sga_n_hi: 5
+sga_k: 3
+sga_literal: False
+use_anc: False
+anc_t_full: 0.25
+anc_carry: argmax
+micro_batch: 2
+vae_tiling: False
+global_rng: False

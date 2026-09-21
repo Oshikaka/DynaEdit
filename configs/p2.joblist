@@ -1,0 +1,12 @@
+# 前 8 行 = 第一轮（8 卡各一条），后 3 行 = 第二轮（worker 0/1/2）
+configs/phase2.yaml swan_take_off   p2_base
+configs/phase2.yaml swan_take_off   p2_sga_t0.001
+configs/phase2.yaml swan_take_off   p2_sga_t0.01
+configs/phase2.yaml boat_eagle_dive p2_base
+configs/phase2.yaml boat_eagle_dive p2_sga_t0.001
+configs/phase2.yaml boat_eagle_dive p2_sga_t0.01
+configs/phase2.yaml bear_rear_up    p2_base
+configs/phase2.yaml bear_rear_up    p2_sga_t0.001
+configs/phase2.yaml bear_rear_up    p2_sga_t0.01
+configs/phase2.yaml boat_eagle_dive p2_neg_none
+configs/phase2.yaml boat_eagle_dive p2_neg_en

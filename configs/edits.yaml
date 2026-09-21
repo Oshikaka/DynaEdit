@@ -1,0 +1,82 @@
+# 编辑内容。刻意选【需要显著时空改动】的编辑（动作改变 / 交互式插入），
+# 因为论文 Fig.2 的现象（n_max=N 时有编辑力但有低频错位 + 高频抖动）
+# 只在这类编辑上才显现；纯外观编辑（换颜色、换材质）看不出来。
+#
+# target_first_frame: 可选。需要改首帧的编辑（风格变化、首帧就该出现的物体）才填，
+#                     留空则用源视频首帧。阶段 1 全部留空。
+
+- name: boat_eagle_dive
+  input_video: videos/boat_832.mp4
+  source_prompt: >-
+    A white boat is sailing through the blue ocean.
+  target_prompt: >-
+    A white boat is sailing through the blue ocean. A large eagle swoops down
+    from the sky toward the boat and skims the water beside it.
+  # 交互式插入：插入物要和原场景发生双向交互
+
+- name: bear_rear_up
+  input_video: videos/bear_832.mp4
+  source_prompt: >-
+    A large brown bear walking on a rocky ledge within a habitat surrounded by
+    stone walls and lush green foliage.
+  target_prompt: >-
+    A large brown bear walking on a rocky ledge within a habitat surrounded by
+    stone walls and lush green foliage. The bear rears up on its hind legs and
+    roars.
+  overrides:
+    # 论文 App.D.1 超参组 (3)：大动作改变 / 大物体轨迹改变，需要更大偏离
+    # 阶段 1 用组 (1)(2) 的 (2.5, 4.5) 时熊完全没动，属预期内的「编辑不足」
+    src_guidance_scale: 4.5
+    tar_guidance_scale: 8.5
+  # 动作改变：主体运动轨迹必须偏离源视频
+
+- name: swan_take_off
+  input_video: videos/blackswan_832.mp4
+  source_prompt: >-
+    A black swan is swimming across a serene pond. The background consists of
+    lush greenery and a concrete barrier, creating a peaceful scene.
+  target_prompt: >-
+    A black swan is swimming across a serene pond. It flaps its wings hard,
+    splashing water, and takes off from the surface. The background consists of
+    lush greenery and a concrete barrier.
+  # 动作改变 + 水花：高频细节多，抖动最容易暴露
+
+# ---- 以下 4 条为扩充样本。source_prompt 中 rabbit / sea_turtle / snowboard
+#      取自 Awesome-Training-Free-WAN2.1-Editing 的官方配置原文；
+#      jeep 那条该仓库没有配置，按画面自拟（⚠️ 非官方文本）。
+#      target_prompt 均为动作/交互类编辑，对应论文 App.D.1 超参组 (3) 的适用场景。
+
+- name: jeep_deer_brake
+  input_video: videos/jeep_832.mp4
+  source_prompt: >-
+    A silver Jeep is driving along a paved road. The camera tracks it from the
+    side while green grass and trees blur past in the background.
+  target_prompt: >-
+    A silver Jeep is driving along a paved road. The camera tracks it from the
+    side while green grass and trees blur past in the background. A deer runs
+    out onto the road ahead and the Jeep brakes hard, skidding to a stop.
+
+- name: rabbit_hop_away
+  input_video: videos/rabbit_832.mp4
+  source_prompt: A rabbit is eating a watermelon on the table.
+  target_prompt: >-
+    A rabbit is eating a watermelon on the table. It stops eating, rises onto
+    its hind legs and hops away, leaving the watermelon behind.
+
+- name: turtle_fish_ascend
+  input_video: videos/sea_turtle_832.mp4
+  source_prompt: >-
+    A graceful sea turtle is swimming through the current, moving its flippers
+    rhythmically.
+  target_prompt: >-
+    A graceful sea turtle is swimming through the current, moving its flippers
+    rhythmically. A school of small silver fish swims up around it, and the
+    turtle turns and rises toward the surface.
+
+- name: snowboard_jump
+  input_video: videos/snowboard_832.mp4
+  source_prompt: A man wearing goggles and a helmet is snowboarding in a snowy field.
+  target_prompt: >-
+    A man wearing goggles and a helmet is snowboarding in a snowy field. He
+    carves hard, launches off a jump and spins in the air before landing in a
+    spray of snow.

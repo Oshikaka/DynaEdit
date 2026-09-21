@@ -1,0 +1,6 @@
+configs/phase4.yaml swan_take_off p4_fe_lo
+configs/phase4.yaml boat_eagle_dive p4_fe_lo
+configs/phase4.yaml bear_rear_up p4_fe_lo
+configs/phase4.yaml swan_take_off p4_fe_hi
+configs/phase4.yaml boat_eagle_dive p4_fe_hi
+configs/phase4.yaml bear_rear_up p4_fe_hi

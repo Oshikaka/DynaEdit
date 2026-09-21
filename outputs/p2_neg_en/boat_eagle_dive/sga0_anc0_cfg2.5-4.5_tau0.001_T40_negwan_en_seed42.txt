@@ -1,0 +1,30 @@
+source_prompt: A white boat is sailing through the blue ocean.
+target_prompt: A white boat is sailing through the blue ocean. A large eagle swoops down from the sky toward the boat and skims the water beside it.
+target_first_frame: (源视频首帧)
+negative_prompt: 'Bright tones, overexposed, static, blurred details, subtitles, style, works, paintings, images, static, overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards'
+overrides: {}
+dataset_yaml: configs/edits.yaml
+model_id: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+flow_shift: 3.0
+T_steps: 40
+n_max: None
+n_avg: 1
+num_frames: None
+height: 480
+width: 832
+seed: 42
+src_guidance_scale: 2.5
+tar_guidance_scale: 4.5
+negative_prompt_preset: wan_en
+use_sga: False
+use_anc: False
+tau: 0.001
+sga_n_hi: 5
+sga_k: 3
+sga_literal: False
+anc_t_full: 0.25
+anc_carry: argmax
+micro_batch: 2
+vae_tiling: False
+global_rng: False
+exp_name: p2_neg_en

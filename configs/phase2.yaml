@@ -1,0 +1,54 @@
+# 阶段 2：SGA 消融 + 负面 prompt 确认
+#
+# 相对阶段 1 的三处变更（已确认）：
+#   - N: 50 -> 40（WAN 官方 I2V 推荐值）
+#   - negative prompt: 空 -> wan_zh（Wan2.1 官方 sample_neg_prompt 原文）
+#   - bear_rear_up 改用超参组 (3) γ=(4.5, 8.5)，在 configs/edits.yaml 里以 overrides 声明
+#
+# 所以 p2_base 是【阶段 2 自己的基线】，不能直接拿阶段 1 的结果比。
+# 噪声按 (step, branch) 定种子，use_sga=false 恰是 use_sga=true 的 j=0 分支，A/B 干净。
+
+defaults:
+  dataset_yaml: configs/edits.yaml
+  model_id: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+  flow_shift: 3.0
+  T_steps: 40
+  n_max:                       # 留空 = N，论文设定
+  n_avg: 1
+  num_frames:
+  height: 480
+  width: 832
+  seed: 42
+  src_guidance_scale: 2.5      # 组 (1)(2)；bear 在 edits.yaml 里覆盖为 (4.5, 8.5)
+  tar_guidance_scale: 4.5
+  negative_prompt_preset: wan_zh
+  use_sga: false
+  use_anc: false
+  tau: 0.001
+  sga_n_hi: 5
+  sga_k: 3
+  sga_literal: false
+  anc_t_full: 0.25
+  anc_carry: argmax
+  micro_batch: 2
+  vae_tiling: false
+  global_rng: false
+
+experiments:
+  # ---- 负面 prompt 确认：只在 boat 上做，隔离单一变量 ----
+  - exp_name: p2_neg_none
+    negative_prompt_preset: none
+  - exp_name: p2_neg_en
+    negative_prompt_preset: wan_en
+
+  # ---- SGA 消融 ----
+  - exp_name: p2_base            # SGA off，同时充当 neg=wan_zh 的对照
+  - exp_name: p2_sga_t0.001      # 论文附录 D.1 的 tau
+    use_sga: true
+    tau: 0.001
+  - exp_name: p2_sga_t0.01       # 论文正文 6.1 的 tau
+    use_sga: true
+    tau: 0.01
+  - exp_name: p2_sga_t1.0        # 论文两组超参里的【软】那一档（App.D.1 与 6.1 都含 1.0）
+    use_sga: true                # 0.001 与 0.01 其实都深在硬选择区，不构成论文设计的对比
+    tau: 1.0

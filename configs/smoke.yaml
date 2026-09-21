@@ -1,0 +1,22 @@
+# 管线冒烟测试：最小规模跑通形状与数据流，不看画质。
+- exp_name: smoke
+  dataset_yaml: configs/edits_smoke.yaml
+  model_id: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+  flow_shift: 3.0
+  T_steps: 4
+  n_max:
+  n_avg: 1                     # ⚠️ use_sga=true 时本项被忽略，噪声个数由 sga_schedule 决定
+  num_frames: 17               # 必须是 4k+1
+  height: 480
+  width: 832
+  # 留空跟随图像版 FlowEdit。⚠️ WAN2.1 官方推荐用一条很长的负面 prompt，
+  # 在 gamma_tar=4.5 下 uncond 分支是有实际权重的 —— 这是一个待定项，见 doc/phase1-notes.md
+  negative_prompt: ""
+  seed: 42
+  src_guidance_scale: 2.5
+  tar_guidance_scale: 4.5
+  use_sga: false
+  use_anc: false
+  micro_batch: 2
+  vae_tiling: false
+  global_rng: false

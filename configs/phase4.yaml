@@ -1,0 +1,49 @@
+# 阶段 4：论文 App.D.1 的四组超参 + FlowEdit 基线对照
+#
+# 论文的四组 = (γ_src, γ_tar) ∈ {(2.5,4.5), (4.5,8.5)} × τ ∈ {1.0, 0.001}
+#   组(1) 小CFG + τ=1.0    小而精确的改动，高温允许更多偏离（含相机运动）
+#   组(2) 小CFG + τ=0.001  小而精确的改动，低温强制贴近源
+#   组(3) 大CFG + τ=1.0    需要大幅偏离才能符合 target prompt
+#   组(4) 大CFG + τ=0.001  影响很多像素但不需要大幅偏离源运动
+#
+# ⚠️ 阶段 3 已证 τ=1.0 下 SGA 的有效分支数是 4.74–5.00，即退化为朴素平均。
+#    所以论文的四组实际是「2 组 CFG × {朴素平均, 硬选择}」。
+#
+# ignore_overrides: 关掉 edits.yaml 里 bear 的 CFG 覆盖，否则它不参与 CFG 扫描。
+
+defaults:
+  dataset_yaml: configs/edits.yaml
+  model_id: Wan-AI/Wan2.1-I2V-14B-480P-Diffusers
+  flow_shift: 3.0
+  T_steps: 40
+  n_max:
+  n_avg: 1
+  num_frames:
+  height: 480
+  width: 832
+  seed: 42
+  negative_prompt_preset: wan_zh
+  ignore_overrides: true
+  use_sga: true
+  use_anc: true
+  sga_n_hi: 5
+  sga_k: 3
+  sga_literal: false
+  anc_t_full: 0.25
+  anc_carry: argmax
+  micro_batch: 2
+  vae_tiling: false
+  global_rng: false
+
+experiments:
+  # ---- 完整 DynaEdit，论文四组 ----
+  - {exp_name: p4_g1, src_guidance_scale: 2.5, tar_guidance_scale: 4.5, tau: 1.0}
+  - {exp_name: p4_g2, src_guidance_scale: 2.5, tar_guidance_scale: 4.5, tau: 0.001}
+  - {exp_name: p4_g3, src_guidance_scale: 4.5, tar_guidance_scale: 8.5, tau: 1.0}
+  - {exp_name: p4_g4, src_guidance_scale: 4.5, tar_guidance_scale: 8.5, tau: 0.001}
+
+  # ---- 原始 FlowEdit 基线，两组 CFG，供 VLM 对照 ----
+  - {exp_name: p4_fe_lo, src_guidance_scale: 2.5, tar_guidance_scale: 4.5, tau: 0.001,
+     use_sga: false, use_anc: false}
+  - {exp_name: p4_fe_hi, src_guidance_scale: 4.5, tar_guidance_scale: 8.5, tau: 0.001,
+     use_sga: false, use_anc: false}

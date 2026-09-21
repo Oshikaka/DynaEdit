@@ -1,0 +1,12 @@
+# 负面 prompt 预设。在实验 yaml 里用 `negative_prompt_preset: <名字>` 引用，
+# 或直接写 `negative_prompt: "<字面串>"`（字面值优先）。
+#
+# ⚠️ DynaEdit 论文没说用哪个。wan_zh 是 Wan2.1 官方仓 wan/configs/shared_config.py
+#    里的 sample_neg_prompt 原文；wan_en 是 diffusers 模型卡示例里的英文译文。
+#    UMT5 是多语言的，两个都能用，效果需实测。
+
+none: ""
+
+wan_zh: "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+
+wan_en: "Bright tones, overexposed, static, blurred details, subtitles, style, works, paintings, images, static, overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards"

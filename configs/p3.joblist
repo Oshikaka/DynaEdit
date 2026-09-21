@@ -1,0 +1,9 @@
+configs/phase3.yaml swan_take_off   p3_full
+configs/phase3.yaml boat_eagle_dive p3_full
+configs/phase3.yaml bear_rear_up    p3_full
+configs/phase3.yaml swan_take_off   p3_anc_only
+configs/phase3.yaml boat_eagle_dive p3_anc_only
+configs/phase3.yaml bear_rear_up    p3_anc_only
+configs/phase3.yaml swan_take_off   p3_sga_t0.1
+configs/phase3.yaml boat_eagle_dive p3_sga_t0.1
+configs/phase3.yaml bear_rear_up    p3_sga_t0.1

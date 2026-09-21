@@ -1,0 +1,34 @@
+# DynaEdit —— 平台无关依赖
+#
+# 这里【不包含】 torch / torchvision：它们必须按硬件平台单独安装，
+# 因为 ROCm / CUDA 的轮子只在各自的 PyTorch index 上，PyPI 上没有。
+#
+#   AMD / ROCm   → bash env/rebuild-dynaedit.sh
+#   NVIDIA / CUDA → bash env/setup-cuda.sh
+#
+# 两个脚本都会在装完 torch 之后 `pip install -r requirements.txt`，
+# 所以这个文件本身是跨平台的，不用改。
+
+# --- 核心 ---
+diffusers==0.34.0              # pin：WAN repo 的基线就在 0.34.0.dev0 附近，行为最可比
+transformers==4.51.3           # WAN2.1 官方验证过的版本（UMT5EncoderModel + CLIPVisionModelWithProjection）
+accelerate>=1.0.0
+huggingface_hub>=0.30.0,<1.0   # transformers 4.51 不兼容 hub 1.x，必须卡上界
+safetensors>=0.4.0
+
+# --- UMT5 分词器 ---
+sentencepiece>=0.2.0
+protobuf>=4.25.0
+
+# --- WAN 的 prompt_clean ---
+ftfy>=6.1.0
+
+# --- 视频 I/O ---
+imageio>=2.34.0
+imageio-ffmpeg>=0.5.1          # diffusers 的 export_to_video 首选后端（有它就不需要 opencv）
+Pillow>=10.0.0
+
+# --- 杂项 ---
+numpy>=1.24.0
+PyYAML>=6.0                    # 沿用图像版 FlowEdit 的 yaml 配置风格
+tqdm>=4.66.0

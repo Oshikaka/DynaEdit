@@ -1,0 +1,24 @@
+# 第三方仓库：各自带 .git，只作算法对照，不进本仓库
+# FlowEdit   https://github.com/fallenshock/FlowEdit
+# reference  https://github.com/KyujinHan/Awesome-Training-Free-WAN2.1-Editing
+FlowEdit/
+reference/
+
+# 论文 PDF（46M），按 arXiv:2603.17989 自取
+*.pdf
+
+# 结果：mp4 与同名 txt 运行记录进仓库，抽帧图/时空切片图（185M）不进
+outputs/analysis/
+outputs/compare/
+*.png
+
+# 站点构建产物。发布用的那份在 docs/，由 tools/build_site.py 生成
+site/
+site.zip
+
+# 运行产物
+logs/
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/

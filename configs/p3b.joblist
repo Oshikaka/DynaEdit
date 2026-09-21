@@ -1,0 +1,3 @@
+configs/phase3.yaml swan_take_off   p3_sga_only
+configs/phase3.yaml boat_eagle_dive p3_sga_only
+configs/phase3.yaml bear_rear_up    p3_sga_only

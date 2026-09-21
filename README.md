@@ -7,6 +7,9 @@ Training-free 视频编辑：在预训练 flow 模型上做 inversion-free 编�
 
 论文：*Versatile Editing of Video Content, Actions, and Dynamics without Training*，arXiv:2603.17989。
 基座模型：`Wan-AI/Wan2.1-I2V-14B-480P-Diffusers`。
+**结果页**：<https://oshikaka.github.io/DynaEdit/> —— 每组编辑把原视频和 FlowEdit 基线
+并排放，附 source / target prompt。由 `tools/build_site.py` 从 `outputs/` 生成，发布目录是 `docs/`。
+
 算法地基：[FlowEdit](https://github.com/fallenshock/FlowEdit)（图像版，本仓 `FlowEdit/` 下留作对照）
 与 [Awesome-Training-Free-WAN2.1-Editing](https://github.com/KyujinHan/Awesome-Training-Free-WAN2.1-Editing)（WAN 视频版 FlowEdit，作参考不作依赖）。
 
@@ -87,6 +90,10 @@ DynaEdit/
 ├── DynaEdit_utils.py          # 核心算法（阶段 1 起）
 ├── run_script.py              # 入口
 ├── configs/                   # 超参 yaml + 编辑内容 yaml
+├── tools/
+│   ├── build_site.py          # 从 outputs/ 生成对比网页 -> docs/
+│   └── to_h264.py             # 把浏览器解不了的 mp4 转 H.264（原文件不动）
+├── docs/                      # GitHub Pages 发布目录（构建产物）
 ├── slurm/                     # Frontier 作业脚本
 └── outputs/
 ```

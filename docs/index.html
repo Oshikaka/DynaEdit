@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DynaEdit · Original vs. FlowEdit Baseline</title>
+<meta name="description" content="3 edits on Wan2.1-I2V, compared side by side. Training-free: no fine-tuning, no inversion, no changes to attention or the transformer forward.">
+<style>
+:root {
+  --bg: #0d1117; --panel: #151b23; --line: #262d38;
+  --fg: #e6edf3; --dim: #9aa6b2; --faint: #6b7684;
+  --source: #58a6ff; --base: #f0883e; --dyna: #3fb950;
+  --mark: rgba(63,185,80,.18); --mark-line: rgba(63,185,80,.55);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1440px; margin: 0 auto; padding: 0 24px 72px; }
+
+header.top { padding: 56px 0 28px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+header.top h1 { margin: 0 0 10px; font-size: 30px; letter-spacing: -.02em; }
+header.top p { margin: 0; color: var(--dim); max-width: 80ch; }
+header.top p + p { margin-top: 8px; }
+header.top code { background: var(--panel); padding: 1px 6px; border-radius: 5px;
+  font-size: 13px; color: var(--fg); }
+a { color: var(--source); }
+
+.toolbar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap;
+  gap: 10px; align-items: center; padding: 12px 0;
+  background: rgba(13,17,23,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+.toolbar .spacer { flex: 1; }
+.toolbar label { display: inline-flex; align-items: center; gap: 7px;
+  color: var(--dim); font-size: 13px; cursor: pointer; user-select: none; }
+.toolbar input[type=checkbox] { accent-color: var(--dyna); width: 15px; height: 15px; }
+
+button {
+  background: var(--panel); color: var(--fg); border: 1px solid var(--line);
+  padding: 6px 13px; border-radius: 7px; font-size: 13px; cursor: pointer;
+  font-family: inherit; transition: background .12s, border-color .12s;
+}
+button:hover { background: #1d242e; border-color: #38404d; }
+button.on { border-color: var(--dyna); color: var(--dyna); }
+
+.case { border: 1px solid var(--line); border-radius: 14px; background: var(--panel);
+  padding: 22px; margin-bottom: 28px; }
+.case-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline;
+  margin-bottom: 16px; }
+.case-head h2 { margin: 0; font-size: 20px; letter-spacing: -.01em; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge { font-size: 11.5px; color: var(--dim); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 9px; background: #10161e;
+  font-variant-numeric: tabular-nums; }
+
+.prompts { display: grid; gap: 10px; margin-bottom: 18px; }
+.prompt { display: grid; grid-template-columns: 124px 1fr; gap: 14px;
+  align-items: start; background: #10161e; border: 1px solid var(--line);
+  border-radius: 10px; padding: 11px 14px; }
+.prompt p { margin: 0; font-size: 14px; }
+.prompt-target p { color: var(--fg); }
+.prompt:not(.prompt-target) p { color: var(--dim); }
+.tag { font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--faint); padding-top: 3px; }
+.tag-target { color: var(--dyna); }
+mark { background: var(--mark); color: var(--fg); border-bottom: 1px solid var(--mark-line);
+  border-radius: 3px; padding: 0 2px; }
+
+.panes { display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.pane { margin: 0; }
+.pane-label { display: flex; align-items: center; gap: 8px; font-size: 13px;
+  font-weight: 600; margin-bottom: 8px; }
+.pane-label em { font-style: normal; font-weight: 400; color: var(--faint);
+  font-size: 12px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.dot-source { background: var(--source); }
+.dot-base { background: var(--base); }
+.dot-dyna { background: var(--dyna); }
+video { width: 100%; display: block; border-radius: 9px; background: #000;
+  border: 1px solid var(--line); aspect-ratio: 832 / 480; }
+
+.ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.ctl .time { font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums;
+  min-width: 52px; }
+.seek { flex: 1; min-width: 160px; accent-color: var(--dyna); height: 4px; cursor: pointer; }
+
+footer { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 20px;
+  color: var(--faint); font-size: 12.5px; }
+footer code { color: var(--dim); }
+@media (max-width: 640px) {
+  .wrap { padding: 0 14px 48px; }
+  .prompt { grid-template-columns: 1fr; gap: 4px; }
+  header.top { padding-top: 34px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <h1>DynaEdit · Original vs. FlowEdit Baseline</h1>
+  <p>3 edits on Wan2.1-I2V, compared side by side. Training-free: no fine-tuning, no inversion, no changes to attention or the transformer forward.</p>
+  <p>Left to right: <strong style="color:var(--source)">Source</strong> (original input video), <strong style="color:var(--base)">FlowEdit baseline</strong> (plain FlowEdit · SGA off · ANC off). In each target prompt, the <mark>highlighted</mark> span is what was added relative to the source prompt, which describes the original clip.</p>
+</header>
+
+<div class="toolbar">
+  <button id="all-play">Play all</button>
+  <button id="all-pause">Pause all</button>
+  <button id="all-restart">Restart all</button>
+  <div class="spacer"></div>
+  <label><input type="checkbox" id="opt-auto" checked> Autoplay when scrolled into view</label>
+</div>
+
+    <section class="case" id="bear_rear_up">
+      <header class="case-head">
+        <h2>bear rear up</h2>
+        <div class="badges"><span class="badge">CFG 4.5 → 8.5</span> <span class="badge">τ = 0.001</span> <span class="badge">T = 40</span> <span class="badge">seed 42</span> <span class="badge">832×480</span></div>
+      </header>
+      <div class="prompts">
+        <div class="prompt">
+          <span class="tag">source prompt</span>
+          <p>A large brown bear walking on a rocky ledge within a habitat surrounded by stone walls and lush green foliage.</p>
+        </div>
+        <div class="prompt prompt-target">
+          <span class="tag tag-target">target prompt</span>
+          <p>A large brown bear walking on a rocky ledge within a habitat surrounded by stone walls and lush green foliage. <mark>The bear rears up on its hind legs and roars.</mark></p>
+        </div>
+      </div>
+      <div class="panes">
+        <figure class="pane">
+          <figcaption class="pane-label"><span class="dot dot-source"></span>Source<em>original input video</em></figcaption>
+          <video src="videos/bear_rear_up__source.mp4#t=0.001" muted loop playsinline preload="metadata"></video>
+        </figure>
+        <figure class="pane">
+          <figcaption class="pane-label"><span class="dot dot-base"></span>FlowEdit baseline<em>plain FlowEdit · SGA off · ANC off</em></figcaption>
+          <video src="videos/bear_rear_up__p2_base.mp4#t=0.001" muted loop playsinline preload="metadata"></video>
+        </figure>
+      </div>
+      <div class="ctl">
+        <button data-act="toggle">Play / Pause</button>
+        <button data-act="restart">Restart</button>
+        <button data-act="step" data-dir="-1" title="Step back one frame">◀</button>
+        <button data-act="step" data-dir="1" title="Step forward one frame">▶</button>
+        <input class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek">
+        <span class="time">0.00s</span>
+        <button data-act="rate" data-rate="0.5">0.5×</button>
+        <button data-act="rate" data-rate="1" class="on">1×</button>
+      </div>
+    </section>
+    <section class="case" id="boat_eagle_dive">
+      <header class="case-head">
+        <h2>boat eagle dive</h2>
+        <div class="badges"><span class="badge">CFG 2.5 → 4.5</span> <span class="badge">τ = 0.001</span> <span class="badge">T = 40</span> <span class="badge">seed 42</span> <span class="badge">832×480</span></div>
+      </header>
+      <div class="prompts">
+        <div class="prompt">
+          <span class="tag">source prompt</span>
+          <p>A white boat is sailing through the blue ocean.</p>
+        </div>
+        <div class="prompt prompt-target">
+          <span class="tag tag-target">target prompt</span>
+          <p>A white boat is sailing through the blue ocean. <mark>A large eagle swoops down from the sky toward the boat and skims the water beside it.</mark></p>
+        </div>
+      </div>
+      <div class="panes">
+        <figure class="pane">
+          <figcaption class="pane-label"><span class="dot dot-source"></span>Source<em>original input video</em></figcaption>
+          <video src="videos/boat_eagle_dive__source.mp4#t=0.001" muted loop playsinline preload="metadata"></video>
+        </figure>
+        <figure class="pane">
+          <figcaption class="pane-label"><span class="dot dot-base"></span>FlowEdit baseline<em>plain FlowEdit · SGA off · ANC off</em></figcaption>
+          <video src="videos/boat_eagle_dive__p2_base.mp4#t=0.001" muted loop playsinline preload="metadata"></video>
+        </figure>
+      </div>
+      <div class="ctl">
+        <button data-act="toggle">Play / Pause</button>
+        <button data-act="restart">Restart</button>
+        <button data-act="step" data-dir="-1" title="Step back one frame">◀</button>
+        <button data-act="step" data-dir="1" title="Step forward one frame">▶</button>
+        <input class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek">
+        <span class="time">0.00s</span>
+        <button data-act="rate" data-rate="0.5">0.5×</button>
+        <button data-act="rate" data-rate="1" class="on">1×</button>
+      </div>
+    </section>
+    <section class="case" id="swan_take_off">
+      <header class="case-head">
+        <h2>swan take off</h2>
+        <div class="badges"><span class="badge">CFG 2.5 → 4.5</span> <span class="badge">τ = 0.001</span> <span class="badge">T = 40</span> <span class="badge">seed 42</span> <span class="badge">832×480</span></div>
+      </header>
+      <div class="prompts">
+        <div class="prompt">
+          <span class="tag">source prompt</span>
+          <p>A black swan is swimming across a serene pond. The background consists of lush greenery and a concrete barrier, creating a peaceful scene.</p>
+        </div>
+        <div class="prompt prompt-target">
+          <span class="tag tag-target">target prompt</span>
+          <p>A black swan is swimming across a serene pond. <mark>It flaps its wings hard, splashing water, and takes off from the surface.</mark> The background consists of lush greenery and a concrete barrier.</p>
+        </div>
+      </div>
+      <div class="panes">
+        <figure class="pane">
+          <figcaption class="pane-label"><span class="dot dot-source"></span>Source<em>original input video</em></figcaption>
+          <video src="videos/swan_take_off__source.mp4#t=0.001" muted loop playsinline preload="metadata"></video>
+        </figure>
+        <figure class="pane">
+          <figcaption class="pane-label"><span class="dot dot-base"></span>FlowEdit baseline<em>plain FlowEdit · SGA off · ANC off</em></figcaption>
+          <video src="videos/swan_take_off__p2_base.mp4#t=0.001" muted loop playsinline preload="metadata"></video>
+        </figure>
+      </div>
+      <div class="ctl">
+        <button data-act="toggle">Play / Pause</button>
+        <button data-act="restart">Restart</button>
+        <button data-act="step" data-dir="-1" title="Step back one frame">◀</button>
+        <button data-act="step" data-dir="1" title="Step forward one frame">▶</button>
+        <input class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek">
+        <span class="time">0.00s</span>
+        <button data-act="rate" data-rate="0.5">0.5×</button>
+        <button data-act="rate" data-rate="1" class="on">1×</button>
+      </div>
+    </section>
+
+<footer>
+  <p>Source: <code>videos/</code> · FlowEdit baseline: <code>outputs/p2_base</code></p>
+  <p>Base model <code>Wan-AI/Wan2.1-I2V-14B-480P-Diffusers</code>. Generated by <code>tools/build_site.py</code> on 2026-09-21;
+     prompts and hyper-parameters are read from the <code>.txt</code> run record written next to each mp4.</p>
+</footer>
+</div>
+
+<script>
+const cases = [...document.querySelectorAll(".case")];
+
+function vids(card)   { return [...card.querySelectorAll("video")]; }
+function leader(card) { return vids(card)[0]; }
+function play(card)   { vids(card).forEach(v => v.play().catch(() => {})); }
+function pause(card)  { vids(card).forEach(v => v.pause()); }
+function seek(card, t){ vids(card).forEach(v => { v.currentTime = t; }); }
+
+cases.forEach(card => {
+  const ctl  = card.querySelector(".ctl");
+  const bar  = card.querySelector(".seek");
+  const time = card.querySelector(".time");
+
+  ctl.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const act = b.dataset.act;
+    if (act === "toggle")  { leader(card).paused ? play(card) : pause(card); }
+    if (act === "restart") { seek(card, 0); play(card); }
+    if (act === "step") {
+      pause(card);
+      // Wan renders at 16fps, so one frame is 1/16 s
+      seek(card, Math.max(0, leader(card).currentTime + (+b.dataset.dir) / 16));
+    }
+    if (act === "rate") {
+      const r = +b.dataset.rate;
+      vids(card).forEach(v => { v.playbackRate = r; });
+      ctl.querySelectorAll('[data-act=rate]').forEach(x => x.classList.toggle("on", x === b));
+    }
+  });
+
+  bar.addEventListener("input", () => {
+    const l = leader(card);
+    if (l.duration) seek(card, bar.value / 1000 * l.duration);
+  });
+
+  card.addEventListener("timeupdate", e => {
+    const l = leader(card);
+    if (e.target !== l || !l.duration) return;
+    bar.value = l.currentTime / l.duration * 1000;
+    time.textContent = l.currentTime.toFixed(2) + "s";
+    // The streams decode independently and drift apart; pull followers back past 80ms
+    vids(card).slice(1).forEach(v => {
+      if (Math.abs(v.currentTime - l.currentTime) > 0.08) v.currentTime = l.currentTime;
+    });
+  }, true);
+});
+
+document.getElementById("all-play").onclick    = () => cases.forEach(play);
+document.getElementById("all-pause").onclick   = () => cases.forEach(pause);
+document.getElementById("all-restart").onclick = () => cases.forEach(c => { seek(c, 0); play(c); });
+
+const optAuto = document.getElementById("opt-auto");
+const io = new IntersectionObserver(entries => {
+  if (!optAuto.checked) return;
+  entries.forEach(en => en.isIntersecting ? play(en.target) : pause(en.target));
+}, { threshold: 0.35 });
+function watch() { cases.forEach(c => optAuto.checked ? io.observe(c) : io.unobserve(c)); }
+optAuto.onchange = () => { watch(); if (!optAuto.checked) cases.forEach(pause); };
+watch();
+</script>
+</body>
+</html>

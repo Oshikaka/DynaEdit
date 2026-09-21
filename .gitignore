@@ -10,7 +10,7 @@ reference/
 # 结果：mp4 与同名 txt 运行记录进仓库，抽帧图/时空切片图（185M）不进
 outputs/analysis/
 outputs/compare/
-*.png
+# （analysis/compare 已整目录排除，这里不做全局 *.png 排除，免得日后 docs/ 里的配图被吞）
 
 # 站点构建产物。发布用的那份在 docs/，由 tools/build_site.py 生成
 site/
